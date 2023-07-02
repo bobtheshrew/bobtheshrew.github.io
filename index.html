@@ -1,0 +1,350 @@
+<html>
+<head>
+<title>Hiragana Quiz</title>
+<style>
+body {
+	height: 100%;
+	width: 100%;
+	//background-size: 100% 100%;
+	background-image: url('Flag_of_Japan.svg');
+	background-repeat: no-repeat;
+	background-attachment: fixed;
+	background-position: 50% 10%;
+	text-align: center;
+	vertical-align: middle;
+	//display: grid;
+}
+div.container {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -90%);
+	text-align: center;
+	vertical-align: middle;
+	align-items: center;
+	justify-content: center;
+	margin: auto;
+	//border: 3px solid green;
+	//display: flex;
+	//height: 100%;
+	//width: 100%;
+}
+form{
+	text-align: center; 
+	align-items: center;
+	justify-content: center;
+}
+input{
+	font-family: 'Lucida Handwriting', cursive;
+	font-weight: bold;
+	font-size: 2.5em;
+	text-align: center; 
+	border-radius: 30px; 
+	color: rgb(84, 84, 84);
+	//padding:10px;
+}
+
+label{
+	color: white;
+	font-family: 'Lucida Handwriting', cursive;
+	//font-weight: bold; 
+	font-size: 1.5em;
+}
+.english{
+	color: white;
+	background-color: #FFFFFF;
+	animation-name: color;
+	animation-duration: 2s;
+	animation-iteration-count: 1;
+}
+.results{
+	position: absolute;
+	top: 80%;
+	left: 50%;
+	transform: translate(-50%, -70%);
+}
+.mistakes{
+	font-size: 1.5em;
+	color: rgb(188,0,45);
+}
+.successes{
+	font-size: 1.5em;
+}	
+input {
+	background-color: #FFFFFF; 
+	animation-name: color; 
+	animation-duration: 1s; 
+	animation-iteration-count: 1;
+}
+@keyframes correct {
+0% {background-color: #FFFFFF;} 
+50% {background-color: #88FF88;} 
+100 {background-color: #FFFFFF;}
+}
+@keyframes wrong {
+0% {background-color: #FFFFFF;}
+50% {background-color: #FF8888;}
+100 {background-color: #FFFFFF;}
+}
+@keyframes blacky {
+0% {background-color: #FFFFFF;}
+50% {background-color: #000000; } 
+100 {background-color: #FFFFFF;}
+}
+
+.inner {
+  position: absolute;
+  border: 3px solid green;
+}
+</style> <script>
+
+let characters = [
+['あ','a'],
+['い','i'],
+['う','u'],
+['え','e'],
+['お','o'],
+['か','ka'],
+['き','ki'],
+['く','ku'],
+['け','ke'],
+['こ','ko'],
+['さ','sa'],
+['し','shi'],
+['す','su'],
+['せ','se'],
+['そ','so'],
+['た','ta'],
+['ち','chi'],
+['つ','tsu'],
+['て','te'],
+['と','to'],
+['な','na'],
+['に','ni'],
+['ぬ','nu'],
+['ね','ne'],
+['の','no'],
+['は','ha'],
+['ひ','hi'],
+['ふ','fu'],
+['へ','he'],
+['ほ','ho'],
+['ま','ma'],
+['み','mi'],
+['む','mu'],
+['め','me'],
+['も','mo'],
+['や','ya'],
+['ゆ','yu'],
+['よ','yo'],
+['ら','ra'],
+['り','ri'],
+['る','ru'],
+['れ','re'],
+['ろ','ro'],
+['わ','wa'],
+['を','wo'],
+['ん','n'],
+
+['が','ga'],
+['ぎ','gi'],
+['ぐ','gu'],
+['げ','ge'],
+['ご','go'],
+['ざ','za'],
+['じ','ji'],
+['ず','zu'],
+['ぜ','ze'],
+['ぞ','zo'],
+['だ','da'],
+['ぢ','ji'],
+['づ','zu'],
+['で','de'],
+['ど','do'],
+['ば','ba'],
+['び','bi'],
+['ぶ','bu'],
+['べ','be'],
+['ぼ','bo'],
+['ぱ','pa'],
+['ぴ','pi'],
+['ぷ','pu'],
+['ぺ','pe'],
+['ぽ','po'],
+
+['きゃ','kya'],
+['きゅ','kyu'],
+['きょ','kyo'],
+['しゃ','sha'],
+['しゅ','shu'],
+['しょ','sho'],
+['ちゃ','cha'],
+['ちゅ','chu'],
+['ちょ','cho'],
+['にゃ','nya'],
+['にゅ','nyu'],
+['にょ','nyo'],
+['ひゃ','hya'],
+['ひゅ','hyu'],
+['ひょ','hyo'],
+['みゃ','mya'],
+['みゅ','myu'],
+['みょ','myo'],
+['りゃ','rya'],
+['りゅ','ryu'],
+['りょ','ryo'],
+
+['ぎゃ','gya'],
+['ぎゅ','gyu'],
+['ぎょ','gyo'],
+['じゃ','ja'],
+['じゅ','ju'],
+['じょ','jo'],
+['びゃ','bya'],
+['びゅ','byu'],
+['びょ','byo'],
+['ぴゃ','pya'],
+['ぴゅ','pyu'],
+['ぴょ','pyo']
+];
+
+
+var mistakes = "";
+var successes = "";
+var keyPresses = 0;
+var hiragana = "";
+var english = ""; 
+var answer="";
+var character;
+var timerInterval;
+var min = 0; 
+var sec = 0;
+
+function Start() {
+	 //shuffle
+	for (var i = 0; i < characters.length; i++) {
+		swap(i, randomIntFromInterval(1, characters.length-1))
+	}
+	//start timer
+	timerInterval = setInterval(timer, 1000);
+
+	//first question
+	Next();
+}
+
+function timer() { // Main Timer
+	secOut = padTime (sec); 
+	minOut = padTime (min);
+	sec = ++sec;
+	if (sec == 60) {
+		min = ++min;
+		sec = 0;
+	}
+	document.getElementById("timer").innerHTML = minOut + ":" + secOut;
+}
+
+function padTime(i) {
+	if (i < 10){
+		i = "0" + i;
+	}
+	return i;
+}
+
+function randomIntFromInterval (min, max) { // min and max included
+	return Math.floor(Math.random() * (max - min + 1) + min);
+}
+
+function Next() {
+	character = characters.shift();
+	if (character === undefined) {
+		document.getElementById("hiragana").value = 'Done!'; 
+		document.getElementById('answer').value =  document.getElementById("timer").innerHTML; 
+		document.getElementById('answer').disabled = true;
+		clearInterval(timerInterval);
+	}
+	
+	hiragana = character[0];
+	english = character[1];
+	
+	document.getElementById("hiragana").value = hiragana;
+	document.getElementById("english").value = english;
+	document.getElementById("mistakes").innerHTML = mistakes;
+	document.getElementById("successes").innerHTML = successes;
+	document.getElementById("answer").value="";
+	//focus to answer
+	document.getElementById("answer").focus();
+	keyPresses = 0;
+}
+
+function keyUp() {
+	answer = document.getElementById("answer").value;
+	if (answer == "")
+	{
+		//do nothing
+	} else if (answer==english){ // correct answer
+		document.getElementById('answer').disabled = true;
+		successes += " " + hiragana + "=" + english + " ";
+		showAnimation ('answer', 'correct');
+		setTimeout(() => { document.getElementById('answer').disabled = false; Next(); }, 500);
+	} else if ((answer.length >= english.length) || (answer.charAt(answer.length-1)!= english.charAt(answer.length-1))){
+		//wrong answer
+		document.getElementById('answer').disabled = true;
+		mistakes += " " + hiragana + "=" + english + " ";
+		showAnimation('answer', 'wrong');
+		showAnimation('english', 'blacky');
+		characters.push(character); // add to the end
+		characters.unshift(character); //add to the start (redo!)
+		setTimeout(() => { document.getElementById('answer').disabled = false; Next(); }, 2000);
+	}
+}
+
+function showAnimation (elementName, animationName) {
+	var el = document.getElementById(elementName);
+	el.style.animation = 'none';
+	el.offsetHeight; /* trigger reflow */
+	el.style.animation = null;
+	el.style.animationName = animationName;
+}
+
+//swap the two indexes in characters 
+function swap (idx_i, idx_j){
+	var i = characters[idx_i]; 
+	var j = characters[idx_j];
+	characters[idx_i] = j;
+	characters[idx_j] = i;
+}
+</script>
+</head>
+<body onload="Start();">
+
+<div class="outer">
+   <div class="inner">1</div>
+   <div class="inner">2</div>
+   <div class="inner">3</div>
+   <div class="inner">4</div>
+</div>
+
+
+	<div class="container">
+		<form>
+			<table><tr><td>
+				<br><br><br><br>
+				<label for="hiragana">Hiragana: </label><br>
+				<input type="text" id="hiragana" name="hiragana" value="" size="4"><br>
+				<label for="answer">Answer: </label><br>
+				<input type="text" id="answer" name="answer" value="" onkeyup="keyUp()" size="4"><br>
+				<label for="english">Hint: </label><br>
+				<input class="english" type="text" id="english" name="english" value="English" size="4">
+			</td></tr></table>
+		</form>
+		<br>
+	</div>
+	<div class="results">
+		<p align="center" id="mistakes" class="mistakes"></p>
+		<p align="center" id="successes" class="successes"></p>
+		<p align="center" id="timer" class="time"></p>
+	</div>
+</body>
+</html>
+
+
