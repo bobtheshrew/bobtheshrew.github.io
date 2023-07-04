@@ -633,7 +633,7 @@ $(function () {
         toggleNumberButton(imageIndex, true);
     };
 
-    var playButton = $('<img id="playButton" src="/images/play.svg" />');
+    var playButton = $('<img id="playButton" src="images/play.svg" />');
     playButton.click(function () {
         if ($('video')[0]) {
             $('video')[0].play();
@@ -813,7 +813,7 @@ $(function () {
         var regexS = "(/(?:(?:r/)|(?:imgur/a/)|(?:u(?:ser)?/)|(?:domain/)|(?:search))[^&#?]*)[?]?(.*)";
         var regex = new RegExp(regexS);
         var results = regex.exec(window.location.href);
-        //log(results);
+        console.log(window.location.href + results);
         if (results === null) {
             return ["", ""];
         } else {

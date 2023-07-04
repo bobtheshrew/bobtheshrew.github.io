@@ -6,7 +6,7 @@ body {
 	height: 100%;
 	width: 100%;
 	//background-size: 100% 100%;
-	background-image: url('Flag_of_Japan.svg');
+	//background-image: url('Flag_of_Japan.svg');
 	background-repeat: no-repeat;
 	background-attachment: fixed;
 	background-position: 50% 10%;
@@ -16,23 +16,33 @@ body {
 }
 div.container {
 	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -90%);
+	//top: 50%;
+	//left: 50%;
+	//transform: translate(-50%, -90%);
 	text-align: center;
 	vertical-align: middle;
 	align-items: center;
 	justify-content: center;
 	margin: auto;
+	background-repeat: no-repeat;
+	background-attachment: fixed;
+	background-position: 50% 10%;
 	//border: 3px solid green;
 	//display: flex;
 	//height: 100%;
-	//width: 100%;
+	//display:	block;
+	box-sizing: border-box;
+	width:auto;
+	padding: 50px;
 }
 form{
-	text-align: center; 
-	align-items: center;
-	justify-content: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+	//text-align: center; 
+	//align-items: center;
+	//justify-content: center;
 }
 input{
 	font-family: 'Lucida Handwriting', cursive;
@@ -316,19 +326,11 @@ function swap (idx_i, idx_j){
 </script>
 </head>
 <body onload="Start();">
-
-<div class="outer">
-   <div class="inner">1</div>
-   <div class="inner">2</div>
-   <div class="inner">3</div>
-   <div class="inner">4</div>
-</div>
-
-
 	<div class="container">
+		<img src="Flag_of_Japan.svg" alt="Snow" style="width:100%;">
 		<form>
 			<table><tr><td>
-				<br><br><br><br>
+				
 				<label for="hiragana">Hiragana: </label><br>
 				<input type="text" id="hiragana" name="hiragana" value="" size="4"><br>
 				<label for="answer">Answer: </label><br>
