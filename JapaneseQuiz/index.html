@@ -1,8 +1,14 @@
 <html>
 <head>
-<title>Hiragana Quiz</title>
+<title>Japanese Quiz</title>
 <style>
+@font-face {
+  font-family: Tenada;
+  src: url(tenada.ttf);
+}
+
 body {
+    font-size: 62.5%;
 	height: 100%;
 	width: 100%;
 	//background-size: 100% 100%;
@@ -18,24 +24,25 @@ div.container {
 	position: absolute;
 	//top: 50%;
 	//left: 50%;
-	//transform: translate(-50%, -90%);
+	//transform: translate(-50%, -100%);
 	text-align: center;
 	vertical-align: middle;
 	align-items: center;
 	justify-content: center;
-	margin: auto;
+	//margin: auto;
 	background-repeat: no-repeat;
 	background-attachment: fixed;
-	background-position: 50% 10%;
+	//background-position: 50% 10%;
 	//border: 3px solid green;
 	//display: flex;
-	//height: 100%;
+	height:50%;
+	width:99%;
 	//display:	block;
 	box-sizing: border-box;
-	width:auto;
-	padding: 50px;
+	//width:100%;
+	padding: 5px;
 }
-form{
+table{
   position: absolute;
   top: 50%;
   left: 50%;
@@ -44,23 +51,35 @@ form{
 	//align-items: center;
 	//justify-content: center;
 }
+
+form{
+text-align=center;
+}
+
 input{
-	font-family: 'Lucida Handwriting', cursive;
+	font-family: 'Tenada','Lucida Handwriting', cursive;
 	font-weight: bold;
-	font-size: 2.5em;
+	font-size: 3.0vh;
 	text-align: center; 
 	border-radius: 30px; 
 	color: rgb(84, 84, 84);
 	//padding:10px;
 }
 
-label{
+label, .time{
 	color: white;
 	font-family: 'Lucida Handwriting', cursive;
 	//font-weight: bold; 
-	font-size: 1.5em;
+	font-size: 3.0vh;
 }
-.english{
+
+img{
+  height: 100%;
+  //min-height: 100%;
+  //width: 100%;
+  //border: 3px solid green;
+}
+.answer{
 	color: white;
 	background-color: #FFFFFF;
 	animation-name: color;
@@ -72,10 +91,12 @@ label{
 	top: 80%;
 	left: 50%;
 	transform: translate(-50%, -70%);
+	font-size: 2.0vh;
 }
 .mistakes{
 	font-size: 1.5em;
 	color: rgb(188,0,45);
+	font-size: 2.0vh;
 }
 .successes{
 	font-size: 1.5em;
@@ -222,9 +243,9 @@ let characters = [
 var mistakes = "";
 var successes = "";
 var keyPresses = 0;
-var hiragana = "";
-var english = ""; 
-var answer="";
+var japanese = "";
+var answer = ""; 
+var guess="";
 var character;
 var timerInterval;
 var min = 0; 
@@ -267,44 +288,44 @@ function randomIntFromInterval (min, max) { // min and max included
 function Next() {
 	character = characters.shift();
 	if (character === undefined) {
-		document.getElementById("hiragana").value = 'Done!'; 
-		document.getElementById('answer').value =  document.getElementById("timer").innerHTML; 
-		document.getElementById('answer').disabled = true;
+		document.getElementById("japanese").value = 'Done!'; 
+		document.getElementById('guess').value =  document.getElementById("timer").innerHTML; 
+		document.getElementById('guess').disabled = true;
 		clearInterval(timerInterval);
 	}
 	
-	hiragana = character[0];
-	english = character[1];
+	japanese = character[0];
+	answer = character[1];
 	
-	document.getElementById("hiragana").value = hiragana;
-	document.getElementById("english").value = english;
+	document.getElementById("japanese").value = japanese;
+	document.getElementById("answer").value = answer;
 	document.getElementById("mistakes").innerHTML = mistakes;
 	document.getElementById("successes").innerHTML = successes;
-	document.getElementById("answer").value="";
-	//focus to answer
-	document.getElementById("answer").focus();
+	document.getElementById("guess").value="";
+	//focus to guess
+	document.getElementById("guess").focus();
 	keyPresses = 0;
 }
 
 function keyUp() {
-	answer = document.getElementById("answer").value;
-	if (answer == "")
+	guess = document.getElementById("guess").value;
+	if (guess == "")
 	{
 		//do nothing
-	} else if (answer==english){ // correct answer
-		document.getElementById('answer').disabled = true;
-		successes += " " + hiragana + "=" + english + " ";
-		showAnimation ('answer', 'correct');
-		setTimeout(() => { document.getElementById('answer').disabled = false; Next(); }, 500);
-	} else if ((answer.length >= english.length) || (answer.charAt(answer.length-1)!= english.charAt(answer.length-1))){
-		//wrong answer
-		document.getElementById('answer').disabled = true;
-		mistakes += " " + hiragana + "=" + english + " ";
-		showAnimation('answer', 'wrong');
-		showAnimation('english', 'blacky');
+	} else if (guess.toLowerCase()==answer){ // correct guess
+		document.getElementById('guess').disabled = true;
+		successes += " " + japanese + "=" + answer + " ";
+		showAnimation ('guess', 'correct');
+		setTimeout(() => { document.getElementById('guess').disabled = false; Next(); }, 500);
+	} else if ((guess.length >= answer.length) || (guess.toLowerCase().charAt(guess.length-1)!= answer.charAt(guess.length-1))){
+		//wrong guess
+		document.getElementById('guess').disabled = true;
+		mistakes += " " + japanese + "=" + answer + " ";
+		showAnimation('guess', 'wrong');
+		showAnimation('answer', 'blacky');
 		characters.push(character); // add to the end
 		characters.unshift(character); //add to the start (redo!)
-		setTimeout(() => { document.getElementById('answer').disabled = false; Next(); }, 2000);
+		setTimeout(() => { document.getElementById('guess').disabled = false; Next(); }, 2000);
 	}
 }
 
@@ -327,24 +348,25 @@ function swap (idx_i, idx_j){
 </head>
 <body onload="Start();">
 	<div class="container">
-		<img src="Flag_of_Japan.svg" alt="Snow" style="width:100%;">
-		<form>
-			<table><tr><td>
-				
-				<label for="hiragana">Hiragana: </label><br>
-				<input type="text" id="hiragana" name="hiragana" value="" size="4"><br>
-				<label for="answer">Answer: </label><br>
-				<input type="text" id="answer" name="answer" value="" onkeyup="keyUp()" size="4"><br>
-				<label for="english">Hint: </label><br>
-				<input class="english" type="text" id="english" name="english" value="English" size="4">
-			</td></tr></table>
-		</form>
+		<img src="Circle_of_Japan.svg">
+	</div>
+	<div class="container">
+		<table><tr><td>
+			<p align="center" id="timer" class="time">&nbsp;</p>
+			<form>
+				<label for="japanese">Japanese: </label><br>
+				<input type="text" id="japanese" name="japanese" value="" size="4"><br>
+				<label for="guess">Guess: </label><br>
+				<input type="text" id="guess" name="guess" value="" onkeyup="keyUp()" size="4"><br>
+				<label for="answer">Hint: </label><br>
+				<input class="answer" type="text" id="answer" name="answer" value="answer" size="4">
+			</form>				
+		</td></tr></table>
 		<br>
 	</div>
 	<div class="results">
 		<p align="center" id="mistakes" class="mistakes"></p>
 		<p align="center" id="successes" class="successes"></p>
-		<p align="center" id="timer" class="time"></p>
 	</div>
 </body>
 </html>
