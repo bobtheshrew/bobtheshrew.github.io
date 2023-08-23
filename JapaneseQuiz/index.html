@@ -256,6 +256,9 @@ function Start() {
 	for (var i = 0; i < characters.length; i++) {
 		swap(i, randomIntFromInterval(1, characters.length-1))
 	}
+	
+	getBestCookie();
+	
 	//start timer
 	timerInterval = setInterval(timer, 1000);
 
@@ -292,6 +295,7 @@ function Next() {
 		document.getElementById('guess').value =  document.getElementById("timer").innerHTML; 
 		document.getElementById('guess').disabled = true;
 		clearInterval(timerInterval);
+		setBestCookie();
 	}
 	
 	japanese = character[0];
@@ -344,6 +348,50 @@ function swap (idx_i, idx_j){
 	characters[idx_i] = j;
 	characters[idx_j] = i;
 }
+function setCookie(cname, cvalue, exdays) {
+  const d = new Date();
+  d.setTime(d.getTime() + (exdays*24*60*60*1000));
+  let expires = "expires="+ d.toUTCString();
+  document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+}
+
+function getCookie(cname) {
+  let name = cname + "=";
+  let decodedCookie = decodeURIComponent(document.cookie);
+  let ca = decodedCookie.split(';');
+  for(let i = 0; i <ca.length; i++) {
+    let c = ca[i];
+    while (c.charAt(0) == ' ') {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) == 0) {
+      return c.substring(name.length, c.length);
+    }
+  }
+  return "";
+}
+
+function getBestCookie()
+{
+  let best = getCookie("best");
+  if (best == "")
+  {
+	best="99:99"
+	setCookie("best", best, 365);
+  }
+  document.getElementById("best").innerHTML = best;
+}
+
+function setBestCookie()
+{
+	thisTime = document.getElementById('guess').value;
+	bestTime = document.getElementById("best").innerHTML;
+	
+	//TODO Parse mins and secs from thisTime and bestTime
+	//TODO Compare mins and then secs
+	//TODO setCookie("best", newBest, 365); 
+}
+
 </script>
 </head>
 <body onload="Start();">
@@ -353,6 +401,7 @@ function swap (idx_i, idx_j){
 	<div class="container">
 		<table><tr><td>
 			<p align="center" id="timer" class="time">&nbsp;</p>
+			<p align="center" id="best" class="best">&nbsp;</p>
 			<form>
 				<label for="japanese">Japanese: </label><br>
 				<input type="text" id="japanese" name="japanese" value="" size="4"><br>
