@@ -3,57 +3,42 @@
 <title>Japanese Quiz</title>
 <style>
 @font-face {
-  font-family: Tenada;
-  src: url(tenada.ttf);
+        font-family: Tenada;
+        src: url(tenada.ttf);
 }
 
 body {
-    font-size: 62.5%;
+        font-size: 62.5%;
 	height: 100%;
 	width: 100%;
-	//background-size: 100% 100%;
-	//background-image: url('Flag_of_Japan.svg');
 	background-repeat: no-repeat;
 	background-attachment: fixed;
 	background-position: 50% 10%;
 	text-align: center;
 	vertical-align: middle;
-	//display: grid;
 }
 div.container {
 	position: absolute;
-	//top: 50%;
-	//left: 50%;
-	//transform: translate(-50%, -100%);
 	text-align: center;
 	vertical-align: middle;
 	align-items: center;
 	justify-content: center;
-	//margin: auto;
-	background-repeat: no-repeat;
-	background-attachment: fixed;
-	//background-position: 50% 10%;
 	//border: 3px solid green;
-	//display: flex;
 	height:50%;
 	width:99%;
-	//display:	block;
 	box-sizing: border-box;
-	//width:100%;
 	padding: 5px;
 }
+	
 table{
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-	//text-align: center; 
-	//align-items: center;
-	//justify-content: center;
 }
 
 form{
-text-align=center;
+        text-align=center;
 }
 
 input{
@@ -63,21 +48,16 @@ input{
 	text-align: center; 
 	border-radius: 30px; 
 	color: rgb(84, 84, 84);
-	//padding:10px;
 }
 
 label, .time{
 	color: white;
 	font-family: 'Lucida Handwriting', cursive;
-	//font-weight: bold; 
 	font-size: 3.0vh;
 }
 
 img{
-  height: 100%;
-  //min-height: 100%;
-  //width: 100%;
-  //border: 3px solid green;
+        height: 100%;
 }
 .answer{
 	color: white;
@@ -87,19 +67,19 @@ img{
 	animation-iteration-count: 1;
 }
 .results{
-	position: absolute;
-	top: 80%;
-	left: 50%;
-	transform: translate(-50%, -70%);
+	position: fixed;
+        left: 0;
+        bottom: 0;
+	width: 100%;
+        text-align: center;
 	font-size: 2.0vh;
 }
 .mistakes{
-	font-size: 1.5em;
 	color: rgb(188,0,45);
 	font-size: 2.0vh;
 }
 .successes{
-	font-size: 1.5em;
+	font-size: 2.0vh;
 }	
 input {
 	background-color: #FFFFFF; 
@@ -239,7 +219,6 @@ let characters = [
 ['ぴょ','pyo']
 ];
 
-
 var mistakes = "";
 var successes = "";
 var keyPresses = 0;
@@ -277,6 +256,7 @@ function timer() { // Main Timer
 	document.getElementById("timer").innerHTML = minOut + ":" + secOut;
 }
 
+//pad number with a leading 0 if needed (0-9)
 function padTime(i) {
 	if (i < 10){
 		i = "0" + i;
