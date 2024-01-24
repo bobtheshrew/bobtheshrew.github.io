@@ -231,9 +231,22 @@ var min = 0;
 var sec = 0;
 
 function Start() {
-	 //shuffle
+	 //shuffle 0-45,46-70,71-91,92-103
+	for (var i = 0; i <= 45; i++) {
+		swap(i, randomIntFromInterval(0, 45));
+	}
+	for (var i = 46; i <= 70; i++) {
+		swap(i, randomIntFromInterval(46, 70));
+	}
+	for (var i = 71; i <= 91; i++) {
+		swap(i, randomIntFromInterval(71, 91));
+	}
+	for (var i = 92; i <= 103; i++) {
+		swap(i, randomIntFromInterval(92, 103));
+	}
+	var s =  "";
 	for (var i = 0; i < characters.length; i++) {
-		swap(i, randomIntFromInterval(1, characters.length-1))
+		s = s + characters[i];
 	}
 	
 	getBestCookie();
