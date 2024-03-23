@@ -109,7 +109,7 @@ label.checkbox { font-weight: bold; }
     
     border-top: 50px solid transparent;
     border-bottom: 50px solid transparent; 
-    border-right: 50px solid white; 
+    border-right: 100px solid white; 
 	z-index:2;
     opacity: 0.8;
     
@@ -118,8 +118,8 @@ label.checkbox { font-weight: bold; }
 
 .nextArrow {
     position: absolute;
-    top: 90%;
-    right: 10px;
+    top: 60%;
+    left: 10px;
     width: 0; 
     height: 0; 
     
