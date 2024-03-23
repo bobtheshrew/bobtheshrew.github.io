@@ -9,6 +9,7 @@ embedit.imageTypes = {
 };
 
 embedit.redditBaseUrl = "http://www.reddit.com";
+embedit.redditBaseUrlOld = "http://old.reddit.com";
 
 if (typeof window === "undefined") {
   // eslint-disable-next-line no-redeclare
@@ -18,6 +19,7 @@ if (typeof window === "undefined") {
 if (window.location && window.location.protocol === "https:") {
   // page is secure
   embedit.redditBaseUrl = "https://www.reddit.com";
+  embedit.redditBaseUrlOld = "https://old.reddit.com";
 }
 
 embedit.video = function (webmUrl, mp4Url) {
@@ -290,7 +292,7 @@ embedit.redditItemToPic = function (item) {
     title: item.data.title || item.data.link_title,
     over18: item.data.over_18,
     subreddit: item.data.subreddit,
-    commentsLink: embedit.redditBaseUrl + item.data.permalink,
+    commentsLink: embedit.redditBaseUrlOld + item.data.permalink,
     userLink: item.data.author,
     data: item.data,
   };
