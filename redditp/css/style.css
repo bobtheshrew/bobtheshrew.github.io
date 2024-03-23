@@ -102,14 +102,14 @@ label.checkbox { font-weight: bold; }
 
 .prevArrow {
     position: absolute;
-    top: 50%;
+    top: 10%;
     left: 10px;
     width: 0; 
     height: 0; 
     
-    border-top: 15px solid transparent;
-    border-bottom: 15px solid transparent; 
-    border-right: 30px solid white; 
+    border-top: 50px solid transparent;
+    border-bottom: 50px solid transparent; 
+    border-right: 50px solid white; 
 	z-index:2;
     opacity: 0.8;
     
@@ -118,14 +118,14 @@ label.checkbox { font-weight: bold; }
 
 .nextArrow {
     position: absolute;
-    top: 50%;
+    top: 85%;
     right: 10px;
     width: 0; 
     height: 0; 
     
-    border-top: 15px solid transparent;
-    border-bottom: 15px solid transparent; 
-    border-left: 30px solid white; 
+    border-top: 50px solid transparent;
+    border-bottom: 50px solid transparent; 
+    border-left: 50px solid white; 
     z-index:2;
     opacity: 0.8;
     cursor: hand; cursor: pointer;
