@@ -10,7 +10,7 @@ embedit.imageTypes = {
 
 embedit.redditBaseUrl = "http://www.reddit.com";
 embedit.redditBaseUrlOld = "http://old.reddit.com";
-embedit.redditPBaseURL = 'https://bobtheshrew.github.io/redditp/index.html?';
+embedit.redditPBaseUrl = 'https://bobtheshrew.github.io/redditp/index.html?';
 		
 if (typeof window === "undefined") {
   // eslint-disable-next-line no-redeclare
