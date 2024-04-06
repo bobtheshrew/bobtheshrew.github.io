@@ -620,12 +620,12 @@ $(function () {
         var photo = rp.photos[imageIndex];
         var subreddit = '/r/' + photo.subreddit;
         var user = '/u/' + photo.userLink + '/submitted';
-
+		
         $('#navboxTitle').html(photo.title);
-        $('#navboxSubreddit').attr('href', embedit.redditBaseUrl + subreddit).html(subreddit);
+        $('#navboxSubreddit').attr('href', embedit.redditPBaseUrl + subreddit).html(subreddit);
         $('#navboxLink').attr('href', photo.url).attr('title', photo.title);
         $('#navboxCommentsLink').attr('href', photo.commentsLink).attr('title', "Comments on reddit");
-        $('#navboxUser').attr('href', 'https://bobtheshrew.github.io/redditp/index.html?' + user).attr('user', "User on reddit");
+        $('#navboxUser').attr('href', embedit.redditPBaseURL + user).attr('user', "User on reddit");
 
         document.title = photo.title + " - " + subreddit + " - redditP";
 
