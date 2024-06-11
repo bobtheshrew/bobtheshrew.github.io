@@ -1,95 +1,93 @@
 <!--
 TODO:
-Parameterize number of segments (array.len()??)
-velocity from clicks?  movement affects v instead of direct angle calculation?
+ - Parameterize number of segments (array.len()??)
+
 REFERENCE: https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D
 FONTS: https://www.w3schools.com/howto/howto_google_fonts.asp
 -->
+
 <html>
   <head>
 	<link href='https://fonts.googleapis.com/css?family=Agbalumo' rel='stylesheet'>
-    <meta name="generator"
-    content="HTML Tidy for HTML5 (experimental) for Windows https://github.com/w3c/tidy-html5/tree/c63cc39" />
     <title>Prize Wheel</title>
 	<style>
 	html, body {
-    margin: 0 !important;
-    padding: 0 !important;
-}
+		margin: 0 !important;
+		padding: 0 !important;
+	}
 
-canvas{
-width:100vw;
-height:100vw;
-max-height:100vh;
-max-width:100vh;
-position:absolute;
-margin:auto;
-top:0;
-right:0;
-bottom:0;
-left:0;
-z-index:0;
-//border: 10px solid #aaa;
-}
+	canvas{
+		width:100vw;
+		height:100vw;
+		max-height:100vh;
+		max-width:100vh;
+		position:absolute;
+		margin:auto;
+		top:0;
+		right:0;
+		bottom:0;
+		left:0;
+		z-index:0;
+	}
 
-input{
-    position:absolute;
-	font-size: 50px; 
-	font-family: 'Agbalumo';
-	float:center;
-	color: white;
-    background: crimson;
-    border: 2px solid rgb(37, 34, 34);
-    border-radius: 10px;
-    z-index:1;
-}
+	input{
+		position:absolute;
+		font-size: 50px; 
+		font-family: 'Agbalumo';
+		float:center;
+		color: white;
+		background: crimson;
+		border: 2px solid rgb(37, 34, 34);
+		border-radius: 10px;
+		z-index:1;
+		top:20;
+		left:20;
+	}
+
+	P{
+		position:absolute;
+		top:20;
+		left:200;
+		//visibility:hidden;
+	}
 	</style>
-	
-	
   </head>
-  <body bgcolor="grey" onload="draw();">
+  <body bgcolor="grey" onload="drawRouletteWheel();">
 	<canvas id="wheelcanvas"  onmousemove="canvas_getCoordinates(event)"></canvas>
-<input type="button" value="Spin!" onclick="spin();"  />
-		<p id="debug"></p>
-		
-    
+	<input type="button" value="Spin!" onclick="spin();"  />
+	<p id="debug"></p>
   </body>
-  <script type="application/javascript">
+
+<script type="application/javascript">
 	
 var colors = ["#B8D430", "#3AB745", "#029990", "#3501CB", "#2E2C75",
     "#673A7E", "#CC0071", "#F80120", "#F35B20", "#FB9A00", "#FFCC00",
     "#FEF200"];
-var restaraunts = ["Living Room", "Entry", "Dishes", "Free Spin", "Hallway",
+	
+var items = ["Living Room", "Entry", "Dishes", "Free Spin", "Hallway",
     "Office", "Bathroom", "Bedroom", "Dining Room", "Pantry", "Kitchen",
     "Goof Off"];
 	
 var currentAngle = 0;
-var targetAngle = 0;
 var arc = (Math.PI*2) / 12;  //(360/12 elements)
-var spinTimeout = null;
-var spinArcStart = 10;
-var spinTime = 0;
 var velocity = 0;
 var lastSample = Date.now();
 var nextLastSample = Date.now();
-var spinTimeTotal = 0;
 const canvas = document.getElementById('wheelcanvas');
+
+//set the canvas size (used for drawing but not clicks / taps)
 canvas.width = 500;
 canvas.height = 500;
+const ctx = canvas.getContext("2d");
+const startTime = Date.now();
 
 //TODO
-//canvas.addEventListener("touchstart", handleStart);
+canvas.addEventListener("touchstart", handleStart);
 //canvas.addEventListener("touchend", handleEnd);
 //canvas.addEventListener("touchcancel", handleCancel);
 //canvas.addEventListener("touchmove", handleMove);
 
-
-const ctx = canvas.getContext("2d");
-const startTime = Date.now();
-
-function draw() {
-    drawRouletteWheel();
-}
+//called onLoad then each frame
 function drawRouletteWheel() {
     if (canvas.getContext) {
         var outsideRadius = 200; //200
@@ -97,15 +95,36 @@ function drawRouletteWheel() {
         var insideRadius = 125;
 		
         ctx.clearRect(0, 0, 500, 500); //0,0,500,500
+		
+				
+		//calculate and display result in center
+		var adjustment = -90;
+		var degrees = (360 - (currentAngle * (180 / Math.PI))+adjustment) % 360;
+		if (degrees < 0) degrees += 360;
+		var arcd = arc * (180 / Math.PI);
+		var index = (Math.floor( (degrees) / arcd))%12; 
+
+		ctx.beginPath();
+		ctx.arc(250, 250, insideRadius, 0, 2 * Math.PI, true);
+		ctx.fillStyle = colors[index];
+		ctx.fill();
+		//ctx.lineWidth = 4;
+		//ctx.strokeStyle = "blue";
+		//ctx.stroke();
+		
+		
         ctx.strokeStyle = "black";
-        ctx.lineWidth = 2;
+        ctx.lineWidth = 1;
         ctx.font =  'bold 12px sans-serif';
+		
         for (var i = 0; i < 12; i++) {
             var angle = currentAngle + i * arc;
             ctx.fillStyle = colors[i];
             ctx.beginPath();
             ctx.arc(250, 250, outsideRadius, angle, angle + arc, false);
             ctx.arc(250, 250, insideRadius, angle + arc, angle, true);
+			ctx.arc(250, 250, outsideRadius, angle, angle + arc, false);
+            
             ctx.stroke();
             ctx.fill();
             
@@ -121,7 +140,7 @@ function drawRouletteWheel() {
             ctx.translate(250 + Math.cos(angle + arc / 2) * textRadius, 250 + Math.sin(angle + arc / 2) * textRadius);
             //rotate the text (convert to deg 1st)
 			ctx.rotate(angle + arc / 2 + Math.PI / 2);
-            var text = restaraunts[i];
+            var text = items[i];
 			ctx.strokeStyle = 'white';
 			ctx.miterLimit = 2;
 			ctx.lineJoin = 'circle';
@@ -131,7 +150,8 @@ function drawRouletteWheel() {
 			ctx.fillText(text, -ctx.measureText(text).width / 2, 0);
             ctx.restore(); //undo the rotate for the next section
         }
-        //Arrow
+		
+        //Draw Arrow
         ctx.fillStyle = "white";
 		ctx.strokeStyle = 'black';
 		ctx.miterLimit = 2;
@@ -149,30 +169,270 @@ function drawRouletteWheel() {
         ctx.fill();
 		ctx.lineWidth = 2;	
 		ctx.stroke();
-		
-		var adjustment = -90;
-		var degrees = (360 - (currentAngle * (180 / Math.PI))+adjustment) % 360;
-		if (degrees < 0) degrees += 360;
-		var arcd = arc * (180 / Math.PI);
-		var index = (Math.floor( (degrees) / arcd))%12; 
+
 
 		ctx.save();
 		ctx.font =  'bold 30px sans-serif ';
-		var text =  restaraunts[index] ;	
+		var text =  items[index] ;	
 		ctx.strokeStyle = 'black';
+		ctx.fillStyle = 'white';
 		ctx.miterLimit = 2;
 		ctx.lineJoin = 'circle';
 		ctx.lineWidth = 4;				
 		ctx.strokeText(text, 250 - (ctx.measureText(text).width / 2), 250 + 10);
 		ctx.fillText(text, 250 - (ctx.measureText(text).width / 2), 250 + 10);
 		ctx.restore();
-	   
-	
     }
 }
+
+// Spin from click
 function spin() {
     velocity += Math.random()+0.14; //0.14 to 1.14
 	return;
+}
+
+function drawAnimationFrame(){
+	const elapsedTime = Date.now()-startTime;
+	
+	velocity *= 0.99; //decay
+	if (velocity > 6) velocity = 6;
+	if (velocity < -6) velocity = -6;	
+	if (Math.abs(velocity) < 0.001) velocity=0;
+	currentAngle += velocity;
+	
+	drawRouletteWheel();
+	
+	/*
+    document.getElementById('debug').innerHTML = 
+	"currentAngle: " + currentAngle+ ", <br>" +
+	"velocity: " + velocity+ ", <br>";	
+    */
+	
+	window.requestAnimationFrame(drawAnimationFrame);
+}
+
+var mouseIsDown = false;
+
+//returns normalized angle from the center in radians
+function getMouseAngle(e)
+{
+	//360rad = 2*pi
+	var x2 = (canvas.getBoundingClientRect().right-canvas.getBoundingClientRect().left )/2;
+	var y2 = (canvas.getBoundingClientRect().bottom-canvas.getBoundingClientRect().top )/2;
+
+	pnt = getMousePos(canvas, e);
+	
+	var deltaX = x2 - pnt.x;
+	var deltaY = y2 - pnt.y;
+	
+	return normalizeRad(Math.atan2(deltaY, deltaX)); 
+}
+
+canvas.onmousedown = function(e){
+	velocity=0;
+	mouseIsDown = true;
+	
+	clickStartAngle = getMouseAngle(e);  
+	clickStartWheelAngle = normalizeRad(currentAngle);    
+}
+
+function handleStart(evt) {
+  evt.preventDefault();
+  log("touchstart.");
+
+  const touches = evt.changedTouches;
+
+  for (let i = 0; i < touches.length; i++) {
+    log(`touchstart: ${i}.`);
+    ongoingTouches.push(copyTouch(touches[i]));
+    const color = colorForTouch(touches[i]);
+    log(`color of touch with id ${touches[i].identifier} = ${color}`);
+    ctx.beginPath();
+    ctx.arc(touches[i].pageX, touches[i].pageY, 4, 0, 2 * Math.PI, false); // a circle at the start
+    ctx.fillStyle = color;
+    ctx.fill();
+  }
+}
+
+function handleMove(evt) {
+  evt.preventDefault();
+  const el = document.getElementById("canvas");
+  const ctx = el.getContext("2d");
+  const touches = evt.changedTouches;
+
+  for (let i = 0; i < touches.length; i++) {
+    const color = colorForTouch(touches[i]);
+    const idx = ongoingTouchIndexById(touches[i].identifier);
+
+    if (idx >= 0) {
+      log(`continuing touch ${idx}`);
+      ctx.beginPath();
+      log(
+        `ctx.moveTo( ${ongoingTouches[idx].pageX}, ${ongoingTouches[idx].pageY} );`,
+      );
+      ctx.moveTo(ongoingTouches[idx].pageX, ongoingTouches[idx].pageY);
+      log(`ctx.lineTo( ${touches[i].pageX}, ${touches[i].pageY} );`);
+      ctx.lineTo(touches[i].pageX, touches[i].pageY);
+      ctx.lineWidth = 4;
+      ctx.strokeStyle = color;
+      ctx.stroke();
+
+      ongoingTouches.splice(idx, 1, copyTouch(touches[i])); // swap in the new touch record
+    } else {
+      log("can't figure out which touch to continue");
+    }
+  }
+}
+
+function handleEnd(evt) {
+  evt.preventDefault();
+  log("touchend");
+  const el = document.getElementById("canvas");
+  const ctx = el.getContext("2d");
+  const touches = evt.changedTouches;
+
+  for (let i = 0; i < touches.length; i++) {
+    const color = colorForTouch(touches[i]);
+    let idx = ongoingTouchIndexById(touches[i].identifier);
+
+    if (idx >= 0) {
+      ctx.lineWidth = 4;
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.moveTo(ongoingTouches[idx].pageX, ongoingTouches[idx].pageY);
+      ctx.lineTo(touches[i].pageX, touches[i].pageY);
+      ctx.fillRect(touches[i].pageX - 4, touches[i].pageY - 4, 8, 8); // and a square at the end
+      ongoingTouches.splice(idx, 1); // remove it; we're done
+    } else {
+      log("can't figure out which touch to end");
+    }
+  }
+}
+function colorForTouch(touch) {
+  let r = touch.identifier % 16;
+  let g = Math.floor(touch.identifier / 3) % 16;
+  let b = Math.floor(touch.identifier / 7) % 16;
+  r = r.toString(16); // make it a hex digit
+  g = g.toString(16); // make it a hex digit
+  b = b.toString(16); // make it a hex digit
+  const color = `#${r}${g}${b}`;
+  return color;
+}
+function copyTouch({ identifier, pageX, pageY }) {
+  return { identifier, pageX, pageY };
+}
+
+function handleCancel(evt) {
+  evt.preventDefault();
+  log("touchcancel.");
+  const touches = evt.changedTouches;
+
+  for (let i = 0; i < touches.length; i++) {
+    let idx = ongoingTouchIndexById(touches[i].identifier);
+    ongoingTouches.splice(idx, 1); // remove it; we're done
+  }
+}
+
+function ongoingTouchIndexById(idToFind) {
+  for (let i = 0; i < ongoingTouches.length; i++) {
+    const id = ongoingTouches[i].identifier;
+
+    if (id === idToFind) {
+      return i;
+    }
+  }
+  return -1; // not found
+}
+
+function log(msg) {
+  const container = document.getElementById("debug");
+  container.innerHTML = `${msg} \n${container.innerHTML}`;
+}
+
+//onMouseMove
+function canvas_getCoordinates(e) {
+	//do noting if not clickin'
+	if(!mouseIsDown) return;
+
+	var clickCurrentAngle = getMouseAngle(e);  
+		
+	currentAngle = clickStartWheelAngle+(clickCurrentAngle-clickStartAngle)
+	currentAngle = normalizeRad(currentAngle);
+	
+	if ((Date.now()-lastSample) > 100)
+	{
+		nextLastSample = lastSample;
+		lastSample = currentAngle;
+	}	
+		
+	/*
+	document.getElementById('debug').innerHTML = 
+	"currentAngle: " + currentAngle+ ", <br>" +
+	"clickStartWheelAngle: " + clickStartWheelAngle+",  <br>"+
+	"clickCurrentAngle: " + clickCurrentAngle+",  <br>"+
+	"clickStartAngle: " + clickStartAngle+",  <br>";
+	*/ 
+}
+
+canvas.onmouseup = function(e){
+	doneClick();
+}
+
+canvas.onmouseout = function(e){
+	doneClick();
+}
+
+function doneClick(){
+    mouseIsDown = false;
+	velocity += lastSample-nextLastSample;
+	lastSample=nextLastSample;
+}
+
+function getMousePos(canvas, evt) {
+  var rect = canvas.getBoundingClientRect();
+  
+  /*
+  document.getElementById('debug').innerHTML = 
+	"rect.left: " + rect.left+ ", <br>" +
+	"rect.top: " + rect.top+ ", <br>" +
+	"evt.clientX: " + evt.clientX+ ", <br>" +
+	"evt.clientY: " + evt.clientY+ ", <br>" +
+	"evt.clientX - rect.left: " + (evt.clientX - rect.left) + ", <br>" +
+	"evt.clientY - rect.top: " + (evt.clientY - rect.top)+ ", <br>" +
+	"canvas.width: " + canvas.width + ", <br>" +
+	"canvas.height: " + canvas.height;	
+  */
+  return {
+    x: evt.clientX - rect.left,
+    y: evt.clientY - rect.top
+  };
+}
+
+function normalizeRad(rad) {
+	rad = rad % (Math.PI*2);
+	if (rad<0) rad += (Math.PI*2);
+	return rad;
+}
+function normalizeDeg(deg) {
+	deg=deg%360;
+	if (deg<0) deg += 360;
+	return deg;
+}
+
+velocity=0;
+
+window.requestAnimationFrame(drawAnimationFrame);
+
+/*
+  /////////////////
+ ///UNUSED CODE?//
+/////////////////
+
+//time(current) (0 to Duration), BaseValue, TotalChangeToAdd, Duration(TimeTotal)
+function easeOut(t, b, c, d) {
+    var ts = (t / d) * t;   //
+    var tc = ts * t;
+    return b + (c * ( (tc + -3) * (ts + 3) * t ) );
 }
 function rotateWheel() {
     spinTime += 30;
@@ -192,144 +452,11 @@ function stopRotateWheel() {
     var index = Math.floor( (360 * degrees % 360) / arcd);
     ctx.save();
     ctx.font =  'bold 30px sans-serif ';
-    var text = restaraunts[index];
+    var text = items[index];
     ctx.fillText(text, 250 + ctx.measureText(text).width / 2, 250 + 10);
     ctx.restore();
 }
 
-//time(current) (0 to Duration), BaseValue, TotalChangeToAdd, Duration(TimeTotal)
-function easeOut(t, b, c, d) {
-    var ts = (t / d) * t;   //
-    var tc = ts * t;
-    return b + (c * ( (tc + -3) * (ts + 3) * t ) );
-}
-
-function drawAnimationFrame(){
-	//currentAngle += 0.01;
-	
-	const elapsedTime = Date.now()-startTime;
-	
-	//velocity = (targetAngle-currentAngle)/100;
-	
-	velocity *= 0.99; //decay
-	
-	if (Math.abs(velocity) < 0.001) velocity=0;
-	currentAngle += velocity;//-easeOut( Date.now(),0,velocity,10000);
-	
-	drawRouletteWheel();
-	
-	/*
-    document.getElementById('debug').innerHTML = 
-	"currentAngle: " + currentAngle+ ", <br>" +
-	"velocity: " + velocity+ ", <br>" +
-	"targetAngle: " + targetAngle;	
-    */
-	
-	window.requestAnimationFrame(drawAnimationFrame);
-}
-
-
-var mouseIsDown = false;
-var mouseDownPointX;
-var mouseDownPointY;
-
-canvas.onmousedown = function(e){
-    mouseDownPointX = e.clientX;
-    mouseDownPointY = e.clientY;
-	
-	//360rad = 2*pi
-	var x2 = 250;
-	var y2 = 250;
-
-	pnt = getMousePos(canvas, e);
-	
-	var deltaX = x2 - pnt.x;
-	var deltaY = y2 - pnt.y;
-	
-	clickStartAngle = normalizeRad(Math.atan2(deltaY, deltaX)); // In radians + 90de;
-	clickStartWheelAngle = normalizeRad(currentAngle);
-    //dragOffset.y = e.y - mainLayer.trans.y;
-
-    mouseIsDown = true;
-}
-canvas.onmouseup = function(e){
-    //if(mouseIsDown) mouseClick(e);
-    mouseIsDown = false;
-	velocity += lastSample-nextLastSample;
-	lastSample=nextLastSample;
-    //velocity=.5;
-	//var diff = mouseDownPointX - e.clientX;
-	//velocity = diff/100;
-}
-
-canvas.onmouseout = function(e){
-    //if(mouseIsDown) mouseClick(e);
-    mouseIsDown = false;
-	velocity += lastSample-nextLastSample;
-	lastSample=nextLastSample;
-}
-
-function getMousePos(canvas, evt) {
-  var rect = canvas.getBoundingClientRect();
-  return {
-    x: evt.clientX - rect.left,
-    y: evt.clientY - rect.top
-  };
-}
-
-function canvas_getCoordinates(e) {
-	//do noting if not clickin'
-	if(!mouseIsDown) return;
-
-	//360rad = 2*pi
-	var x2 = 250;
-	var y2 = 250;
-
-	pnt = getMousePos(canvas, e);
-	
-	var deltaX = x2 - pnt.x;
-	var deltaY = y2 - pnt.y;
-	
-	var clickCurrentAngle = normalizeRad(Math.atan2(deltaY, deltaX)); // In radians
-	
-	currentAngle = normalizeRad(currentAngle);
-	
-	currentAngle = clickStartWheelAngle+(clickCurrentAngle-clickStartAngle)
-	
-	if ((Date.now()-lastSample) > 100)
-	{
-		nextLastSample = lastSample;
-		lastSample = currentAngle;
-	}	
-	
-	
-	//targetAngle = normalizeRad(clickStartWheelAngle+(clickCurrentAngle-clickStartAngle));
-	/*
-	document.getElementById('debug').innerHTML = 
-	"currentAngle: " + currentAngle+ ", <br>" +
-	"clickStartWheelAngle: " + clickStartWheelAngle+",  <br>"+
-	"clickCurrentAngle: " + clickCurrentAngle+",  <br>"+
-	"clickStartAngle: " + clickStartAngle+",  <br>"+
-	"targetAngle: " + targetAngle;
-	*/
-	//currentAngle = (e.clientX/canvas.width) * (2* Math.PI);  // 0 to 1 x 360deg
-  
-}
-
-function normalizeRad(rad) {
-	rad = rad % (Math.PI*2);
-	if (rad<0) rad += (Math.PI*2);
-	return rad;
-}
-function normalizeDeg(deg) {
-	deg=deg%360;
-	if (deg<0) deg += 360;
-	return deg;
-}
-
-velocity=0;
-
-window.requestAnimationFrame(drawAnimationFrame);
-
+*/
 </script>
 </html>
