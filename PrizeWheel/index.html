@@ -16,21 +16,42 @@ FONTS: https://www.w3schools.com/howto/howto_google_fonts.asp
     margin: 0 !important;
     padding: 0 !important;
 }
+
+canvas{
+width:100vw;
+height:100vw;
+max-height:100vh;
+max-width:100vh;
+position:absolute;
+margin:auto;
+top:0;
+right:0;
+bottom:0;
+left:0;
+z-index:0;
+//border: 10px solid #aaa;
+}
+
+input{
+    position:absolute;
+	font-size: 50px; 
+	font-family: 'Agbalumo';
+	float:center;
+	color: white;
+    background: crimson;
+    border: 2px solid rgb(37, 34, 34);
+    border-radius: 10px;
+    z-index:1;
+}
 	</style>
 	
 	
   </head>
   <body bgcolor="grey" onload="draw();">
-    <table height="100%" width="100%">
-      <tr>
-        <td valign="middle" align="center">
-        <canvas id="wheelcanvas" style="border: 10px solid #aaa;" onmousemove="canvas_getCoordinates(event)"></canvas>
-		<br>
-		<input type="button" value="Spin!" onclick="spin();" style="font-family: 'Agbalumo';float:center;" />
+	<canvas id="wheelcanvas"  onmousemove="canvas_getCoordinates(event)"></canvas>
+<input type="button" value="Spin!" onclick="spin();"  />
 		<p id="debug"></p>
-		</td>
-      </tr>
-    </table>
+		
     
   </body>
   <script type="application/javascript">
@@ -55,6 +76,14 @@ var spinTimeTotal = 0;
 const canvas = document.getElementById('wheelcanvas');
 canvas.width = 500;
 canvas.height = 500;
+
+//TODO
+//canvas.addEventListener("touchstart", handleStart);
+//canvas.addEventListener("touchend", handleEnd);
+//canvas.addEventListener("touchcancel", handleCancel);
+//canvas.addEventListener("touchmove", handleMove);
+
+
 const ctx = canvas.getContext("2d");
 const startTime = Date.now();
 
