@@ -91,19 +91,36 @@ canvas.addEventListener("touchmove", handleMove);
 function drawRouletteWheel() {
     if (canvas.getContext) {
         var outsideRadius = 200; //200
-        var textRadius = 160;
-        var insideRadius = 125;
+        var textRadius = 150;
+        var insideRadius = 110;
 		
         ctx.clearRect(0, 0, 500, 500); //0,0,500,500
 		
 				
-		//calculate and display result in center
+		//calculate result
 		var adjustment = -90;
 		var degrees = (360 - (currentAngle * (180 / Math.PI))+adjustment) % 360;
 		if (degrees < 0) degrees += 360;
 		var arcd = arc * (180 / Math.PI);
-		var index = (Math.floor( (degrees) / arcd))%12; 
+		var index = (Math.floor((degrees) / arcd))%12; 
+		var index100 = (degrees % arcd)/arcd; 
+log(index100);
 
+		//Gradient back ground
+		const gradient = ctx.createRadialGradient(250, 250, outsideRadius-10, 250, 250, outsideRadius+150);
+		// Add three color stops
+
+		for (let i = 0; i<13; i++){
+			//gradient.addColorStop(i/11, colors[(index+i)%12]);  //0 to 1 inclusive 
+			gradient.addColorStop(((i/12)+(1/12*(1-index100)))%1, colors[(index+i)%12]);  //0 to 1 inclusive 
+			//gradient.addColorStop(i/11, colors[i]);  //0 to 1 inclusive 
+		}
+		// Set the fill style and draw a rectangle
+		ctx.fillStyle = gradient;
+		ctx.fillRect(0, 0, 500, 500);
+
+
+		//display result in center
 		ctx.beginPath();
 		ctx.arc(250, 250, insideRadius, 0, 2 * Math.PI, true);
 		ctx.fillStyle = colors[index];
@@ -111,6 +128,9 @@ function drawRouletteWheel() {
 		//ctx.lineWidth = 4;
 		//ctx.strokeStyle = "blue";
 		//ctx.stroke();
+		
+		
+		
 		
 		
         ctx.strokeStyle = "black";
@@ -324,7 +344,9 @@ function ongoingTouchIndexById(idToFind) {
 
 function log(msg) {
   const container = document.getElementById("debug");
-  container.innerHTML = `${msg} <br>${container.innerHTML}`;
+  var s = `${msg} <br>${container.innerHTML}`
+  s = s.substring(0, 100)
+  container.innerHTML = s;
 }
 
 //onMouseMove
