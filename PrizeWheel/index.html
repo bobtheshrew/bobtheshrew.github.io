@@ -83,9 +83,9 @@ const startTime = Date.now();
 
 //TODO
 canvas.addEventListener("touchstart", handleStart);
-//canvas.addEventListener("touchend", handleEnd);
-//canvas.addEventListener("touchcancel", handleCancel);
-//canvas.addEventListener("touchmove", handleMove);
+canvas.addEventListener("touchend", handleEnd);
+canvas.addEventListener("touchcancel", handleCancel);
+canvas.addEventListener("touchmove", handleMove);
 
 //called onLoad then each frame
 function drawRouletteWheel() {
