@@ -8,7 +8,7 @@ embedit.imageTypes = {
   redgif: "redgif",
 };
 
-embedit.redditBaseUrl = "http://www.reddit.com";
+embedit.redditBaseUrl = "http://old.reddit.com";
 embedit.redditBaseUrlOld = "http://old.reddit.com";
 embedit.redditPBaseUrl = 'https://bobtheshrew.github.io/redditp/index.html?';
 		
@@ -19,7 +19,7 @@ if (typeof window === "undefined") {
 
 if (window.location && window.location.protocol === "https:") {
   // page is secure
-  embedit.redditBaseUrl = "https://www.reddit.com";
+  embedit.redditBaseUrl = "https://old.reddit.com";
   embedit.redditBaseUrlOld = "https://old.reddit.com";
 }
 
