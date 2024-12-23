@@ -1,0 +1,58 @@
+<!DOCTYPE html> 
+<html> 
+<head>
+<title>Hippo</title>
+<style>
+.button {
+  background-color:#a80cad;
+  border: 2px solid black;
+  color:  #8b0d90;
+  padding: 1px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 20px;
+  margin: 1px 1px;
+  cursor: pointer;
+  border-radius: 12px;
+  font-weight: bold;
+  border-color: #8b0d90;
+  -webkit-text-stroke: .5px black;
+}
+</style>
+</head>
+<body bgcolor='black'> 
+<div style="text-align:center"> 
+  <button  class="button" onclick="playPause()"> Click on Christmas </button> 
+  <br>
+  <video id="video1" width="100%">
+    <source src="hippo.webm" type="video/webm">
+    Your browser does not support HTML video.
+  </video>
+</div> 
+
+<script> 
+var myVideo = document.getElementById("video1"); 
+
+function playPause() { 
+  if (myVideo.paused) 
+    myVideo.play(); 
+  else 
+    myVideo.pause(); 
+} 
+
+function makeBig() { 
+    myVideo.width = 560; 
+} 
+
+function makeSmall() { 
+    myVideo.width = 320; 
+} 
+
+function makeNormal() { 
+    myVideo.width = 420; 
+} 
+</script> 
+
+</body> 
+</html>
