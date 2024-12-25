@@ -23,9 +23,10 @@
 </head>
 <body bgcolor='black'> 
 <div style="text-align:center"> 
-  <button  class="button" onclick="playPause()"> Click on Christmas </button> 
+  <!--button  class="button" onclick="playPause()"> Click on Christmas </button-->
+	<img src="hippos.jpg" id="hippos" height="500" onclick="playPause();document.getElementById('hippos').style.display = 'none';"> 
   <br>
-  <video id="video1" width="100%">
+  <video id="video1" width="80%">
     <source src="hippo.webm" type="video/webm">
     Your browser does not support HTML video.
   </video>
