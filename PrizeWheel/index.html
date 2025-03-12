@@ -83,15 +83,20 @@ var colors = ["#B8D430", "#3AB745", "#029990", "#3501CB", "#2E2C75",
     "#673A7E", "#CC0071", "#F80120", "#F35B20", "#FB9A00", "#FFCC00",
     "#FEF200"];
 	
-var items = ["Living Room", "Entry", "Dishes", "Free Spin", "Hallway",
+var itemsOLD = ["Living Room", "Entry", "Dishes", "Free Spin", "Hallway",
     "Office", "Bathroom", "Bedroom", "Dining Room", "Pantry", "Kitchen",
     "Goof Off"];
 
+var items = ["Living Room", "Entry", "Dishes", "Free Spin"];
+
 var numItems = items.length;
-	
+
+var decay = 1;
+var decayDefault = 0.99;
+ 
 var currentAngle = 0;
 var arc = (Math.PI*2) / numItems;  //(360/currentAngle elements)
-var velocity = 0;
+var velocity = 0.009;
 var lastSample = Date.now();
 var nextLastSample = Date.now();
 const canvas = document.getElementById('wheelcanvas');
@@ -235,13 +240,14 @@ function drawRouletteWheel() {
 // Spin from click
 function spin() {
     velocity += Math.random()+0.14; //0.14 to 1.14
+	decay = decayDefault;
 	return;
 }
 
 function drawAnimationFrame(){
 	const elapsedTime = Date.now()-startTime;
 	
-	velocity *= 0.99; //decay
+	velocity *= decay;
 	if (velocity > 2) velocity = 2;
 	if (velocity < -2) velocity = -2;	
 	if (Math.abs(velocity) < 0.001) velocity=0;
@@ -277,6 +283,7 @@ function getMouseAngle(e)
 
 canvas.onmousedown = function(e){
 	velocity=0;
+	decay = decayDefault;
 	mouseIsDown = true;	
 	clickStartAngle = getMouseAngle(e);  
 	clickStartWheelAngle = normalizeRad(currentAngle);    
@@ -286,6 +293,7 @@ function handleStart(evt) {
   evt.preventDefault();
   //log("touchstart.");
 	velocity=0;
+	decay = decayDefault;
 	mouseIsDown = true;	
 	clickStartAngle = getMouseAngle(evt);  
 	clickStartWheelAngle = normalizeRad(currentAngle); 
@@ -490,7 +498,6 @@ function normalizeDeg(deg) {
 	return deg;
 }
 
-velocity=0;
 currentAngle = 2.88;
 
 window.requestAnimationFrame(drawAnimationFrame);
