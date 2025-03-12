@@ -81,11 +81,12 @@ FONTS: https://www.w3schools.com/howto/howto_google_fonts.asp
 	
 var colors = ["#B8D430", "#3AB745", "#029990", "#3501CB", "#2E2C75",
     "#673A7E", "#CC0071", "#F80120", "#F35B20", "#FB9A00", "#FFCC00",
-    "#FEF200"];
+    "#FEF200","#FEF2FF"];
 	
+
 var itemsOLD = ["Living Room", "Entry", "Dishes", "Free Spin", "Hallway",
     "Office", "Bathroom", "Bedroom", "Dining Room", "Pantry", "Kitchen",
-    "Goof Off"];
+    "Goof Off","another one"];
 
 var items = ["Living Room", "Entry", "Dishes", "Free Spin"];
 
@@ -94,20 +95,20 @@ var numItems = items.length;
 var decay = 1;
 var decayDefault = 0.99;
  
-var currentAngle = 0;
-var arc = (Math.PI*2) / numItems;  //(360/currentAngle elements)
+var currentRad = 0;
+var radPerItem = (Math.PI*2) / numItems;  //(360/currentRad elements)
 var velocity = 0.009;
 var lastSample = Date.now();
 var nextLastSample = Date.now();
 const canvas = document.getElementById('wheelcanvas');
 
 //set the canvas size (used for drawing but not clicks / taps)
+//matches the aspect ratio of the window
 if (window.innerWidth > window.innerHeight) //landscape
 {
 	canvas.height = 500;
 	canvas.width = canvas.height * (window.innerWidth / window.innerHeight);
 }else{ //portrait
-	
 	canvas.width = 500;
 	canvas.height = canvas.width * (window.innerHeight / window.innerWidth);
 }
@@ -127,23 +128,54 @@ canvas.addEventListener("touchend", handleEnd);
 canvas.addEventListener("touchcancel", handleCancel);
 canvas.addEventListener("touchmove", handleMove);
 
-//called onLoad then each frame
+function hslToHex(h, s, l) {
+  s /= 100;
+  l /= 100;
+
+  let c = (1 - Math.abs(2 * l - 1)) * s;
+  let x = c * (1 - Math.abs((h / 60) % 2 - 1));
+  let m = l - c / 2;
+  let r, g, b;
+
+  if (h >= 0 && h < 60) {
+    r = c; g = x; b = 0;
+  } else if (h >= 60 && h < 120) {
+    r = x; g = c; b = 0;
+  } else if (h >= 120 && h < 180) {
+    r = 0; g = c; b = x;
+  } else if (h >= 180 && h < 240) {
+    r = 0; g = x; b = c;
+  } else if (h >= 240 && h < 300) {
+    r = x; g = 0; b = c;
+  } else {
+    r = c; g = 0; b = x;
+  }
+
+  r = Math.round((r + m) * 255);
+  g = Math.round((g + m) * 255);
+  b = Math.round((b + m) * 255);
+
+  return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+}
+
+//called onLoad, then each frame
 function drawRouletteWheel() {
     if (canvas.getContext) {
-        var outsideRadius = 200; //200
+        var outsideRadius = 200;
         var textRadius = 150;
         var insideRadius = 110;
 		
         ctx.clearRect(0, 0, canvas.width, canvas.height); //0,0,500,500
 		
-				
+			
 		//calculate result
 		var adjustment = -90;
-		var degrees = (360 - (currentAngle * (180 / Math.PI))+adjustment) % 360;
-		if (degrees < 0) degrees += 360;
-		var arcd = arc * (180 / Math.PI);
-		var index = (Math.floor((degrees) / arcd))%numItems; 
-		var index100 = (degrees % arcd)/arcd; 
+
+		var currentDeg = (360 - (currentRad * (180 / Math.PI)) + adjustment) % 360;
+		if (currentDeg < 0) currentDeg += 360;
+		var degPerItem = radPerItem * (180 / Math.PI);
+		var index = (Math.floor((currentDeg) / degPerItem))%numItems; 
+		var index100 = (currentDeg % degPerItem)/degPerItem; 
 
 		//Gradient back ground
 		const gradient = ctx.createRadialGradient(canvasCenterX, canvasCenterY, outsideRadius-10, canvasCenterX, canvasCenterY, outsideRadius+Math.max(canvasCenterX, canvasCenterY));
@@ -151,7 +183,10 @@ function drawRouletteWheel() {
 
 		for (let i = 0; i<13; i++){
 			//gradient.addColorStop(i/11, colors[(index+i)%numItems]);  //0 to 1 inclusive 
-			gradient.addColorStop(((i/numItems)+(1/numItems*(1-index100)))%1, colors[(index+i)%numItems]);  //0 to 1 inclusive 
+			//gradient.addColorStop(((i/numItems)+(1/numItems*(1-index100)))%1, colors[(index+i)%numItems]); 
+			gradient.addColorStop(((i/numItems)+(1/numItems*(1-index100)))%1, hslToHex(((index+i)%numItems) * radPerItem * (180 / Math.PI), 100, 50));  //colors[(index+i)%numItems]
+
+			//0 to 1 inclusive 
 			//gradient.addColorStop(i/11, colors[i]);  //0 to 1 inclusive 
 		}
 		// Set the fill style and draw a rectangle
@@ -159,10 +194,11 @@ function drawRouletteWheel() {
 		ctx.fillRect(0, 0, canvas.width, canvas.height);
 
 
-		//display result in center
+		//display result in center circle
 		ctx.beginPath();
 		ctx.arc(canvasCenterX, canvasCenterY, insideRadius, 0, 2 * Math.PI, true);
-		ctx.fillStyle = colors[index];
+		//ctx.fillStyle = colors[index];
+		ctx.fillStyle = hslToHex(currentDeg, 100, 50); // colors[index];
 		ctx.fill();
 		
 		//wheel
@@ -170,12 +206,12 @@ function drawRouletteWheel() {
         ctx.lineWidth = 1;
         ctx.font =  'bold 12px sans-serif';		
         for (var i = 0; i < numItems; i++) {
-            var angle = currentAngle + i * arc;
-            ctx.fillStyle = colors[i];
+            var itemRad = currentRad + i * radPerItem;
+            ctx.fillStyle = hslToHex(i * radPerItem * (180 / Math.PI), 100, 50); //colors[i];
             ctx.beginPath();
-            ctx.arc(canvasCenterX, canvasCenterY, outsideRadius, angle, angle + arc, false);
-            ctx.arc(canvasCenterX, canvasCenterY, insideRadius, angle + arc, angle, true);
-			ctx.arc(canvasCenterX, canvasCenterY, outsideRadius, angle, angle + arc, false);
+            ctx.arc(canvasCenterX, canvasCenterY, outsideRadius, itemRad, itemRad + radPerItem, false);
+            ctx.arc(canvasCenterX, canvasCenterY, insideRadius, itemRad + radPerItem, itemRad, true);
+			ctx.arc(canvasCenterX, canvasCenterY, outsideRadius, itemRad, itemRad + radPerItem, false);
             
             ctx.stroke();
             ctx.fill();
@@ -189,9 +225,9 @@ function drawRouletteWheel() {
             
 			ctx.fillStyle = "black";
 			//move out the ring in the angle of the current segment
-            ctx.translate(canvasCenterX + Math.cos(angle + arc / 2) * textRadius, canvasCenterY + Math.sin(angle + arc / 2) * textRadius);
+            ctx.translate(canvasCenterX + Math.cos(itemRad + radPerItem / 2) * textRadius, canvasCenterY + Math.sin(itemRad + radPerItem / 2) * textRadius);
             //rotate the text (convert to deg 1st)
-			ctx.rotate(angle + arc / 2 + Math.PI / 2);
+			ctx.rotate(itemRad + radPerItem / 2 + Math.PI / 2);
             var text = items[i];
 			ctx.strokeStyle = 'white';
 			ctx.miterLimit = 2;
@@ -251,13 +287,13 @@ function drawAnimationFrame(){
 	if (velocity > 2) velocity = 2;
 	if (velocity < -2) velocity = -2;	
 	if (Math.abs(velocity) < 0.001) velocity=0;
-	currentAngle += velocity;
+	currentRad += velocity;
 	
 	drawRouletteWheel();	
 	window.requestAnimationFrame(drawAnimationFrame);
 	/*
     document.getElementById('debug').innerHTML = 
-	"currentAngle: " + currentAngle+ ", <br>" +
+	"currentRad: " + currentRad+ ", <br>" +
 	"velocity: " + velocity+ ", <br>";	
     */
 }
@@ -286,7 +322,7 @@ canvas.onmousedown = function(e){
 	decay = decayDefault;
 	mouseIsDown = true;	
 	clickStartAngle = getMouseAngle(e);  
-	clickStartWheelAngle = normalizeRad(currentAngle);    
+	clickStartWheelAngle = normalizeRad(currentRad);    
 }
 
 function handleStart(evt) {
@@ -296,7 +332,7 @@ function handleStart(evt) {
 	decay = decayDefault;
 	mouseIsDown = true;	
 	clickStartAngle = getMouseAngle(evt);  
-	clickStartWheelAngle = normalizeRad(currentAngle); 
+	clickStartWheelAngle = normalizeRad(currentRad); 
 
 	return;
 	
@@ -389,22 +425,22 @@ function canvas_getCoordinates(e) {
 	//do noting if not clickin'
 	if(!mouseIsDown) return;
 
-	var clickCurrentAngle = getMouseAngle(e);  
+	var clickcurrentRad = getMouseAngle(e);  
 		
-	currentAngle = clickStartWheelAngle+(clickCurrentAngle-clickStartAngle)
-	currentAngle = normalizeRad(currentAngle);
+	currentRad = clickStartWheelAngle+(clickcurrentRad-clickStartAngle)
+	currentRad = normalizeRad(currentRad);
 	
 	if ((Date.now()-lastSample) > 100)
 	{
 		nextLastSample = lastSample;
-		lastSample = currentAngle;
+		lastSample = currentRad;
 	}	
 		
 	/*
 	document.getElementById('debug').innerHTML = 
-	"currentAngle: " + currentAngle+ ", <br>" +
+	"currentRad: " + currentRad+ ", <br>" +
 	"clickStartWheelAngle: " + clickStartWheelAngle+",  <br>"+
-	"clickCurrentAngle: " + clickCurrentAngle+",  <br>"+
+	"clickcurrentRad: " + clickcurrentRad+",  <br>"+
 	"clickStartAngle: " + clickStartAngle+",  <br>";
 	*/ 
 }
@@ -498,7 +534,7 @@ function normalizeDeg(deg) {
 	return deg;
 }
 
-currentAngle = 2.88;
+currentRad = 2.88;
 
 window.requestAnimationFrame(drawAnimationFrame);
 
@@ -520,15 +556,15 @@ function rotateWheel() {
         return;
     }
     var spinAngle = spinAngleStart - easeOut(spinTime, 0, spinAngleStart, spinTimeTotal);
-    currentAngle += (spinAngle * Math.PI / 180);
+    currentRad += (spinAngle * Math.PI / 180);
     drawRouletteWheel();
     spinTimeout = setTimeout( 'rotateWheel()' , 30);
 }
 function stopRotateWheel() {
     clearTimeout(spinTimeout);
-    var degrees = currentAngle * 180 / Math.PI + 90;
-    var arcd = arc * 180 / Math.PI;
-    var index = Math.floor( (360 * degrees % 360) / arcd);
+    var currentDeg = currentRad * 180 / Math.PI + 90;
+    var degPerItem = arc * 180 / Math.PI;
+    var index = Math.floor( (360 * currentDeg % 360) / degPerItem);
     ctx.save();
     ctx.font =  'bold 30px sans-serif ';
     var text = items[index];
