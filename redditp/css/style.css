@@ -102,7 +102,7 @@ label.checkbox { font-weight: bold; }
 
 .prevArrow {
     position: absolute;
-    top: 10%;
+    top: 60%;
     left: 10px;
     width: 0; 
     height: 0; 
