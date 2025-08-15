@@ -161,7 +161,7 @@ $(function () {
         wipeDown: prevSlide,
         min_move_x: 20,
         min_move_y: 20,
-        preventDefaultEvents: false
+        preventDefaultEvents: true
     });
 
     var OPENSTATE_ATTR = "data-openstate";
