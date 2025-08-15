@@ -118,7 +118,7 @@ label.checkbox { font-weight: bold; }
 
 .nextArrow {
     position: absolute;
-    top: 60%;
+    top: 40%;
     left: 10px;
     width: 0; 
     height: 0; 
