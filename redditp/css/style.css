@@ -14,7 +14,7 @@ body { overflow:hidden; background-color: #000; color:#fff;}
     z-index:-999;
 }
 
-#pictureSlider div { height:100%; width:100%; position:absolute; z-index:-999; }
+#pictureSlider div { height:100%; width:100%; position:absolute; z-index:-999; touch-action: none;}
 
 /* NAVIGATION BOX */
 #navigationBoxes {float: left;}
